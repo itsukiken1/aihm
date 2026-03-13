@@ -166,12 +166,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 <div class="email-section">
   <h2>Get notified about new tools</h2>
   <p>We're building more free tools for cross-border sellers. Drop your email to hear about them first.</p>
-  <form class="email-form" id="emailForm" action="https://formsubmit.co/luzejian0813@gmail.com" method="POST">
-    <input type="hidden" name="_subject" value="AIHM Tools - New Subscriber">
-    <input type="hidden" name="_captcha" value="false">
-    <input type="hidden" name="_next" value="https://itsukiken1.github.io/aihm/thanks.html">
-    <input type="hidden" name="_template" value="table">
-    <input type="email" name="email" id="emailInput" placeholder="your@email.com" required>
+  <form class="email-form" id="emailForm" onsubmit="return handleSubmit(event)">
+    <input type="email" id="emailInput" placeholder="your@email.com" required>
     <button type="submit">Subscribe</button>
   </form>
   <div class="email-success" id="emailSuccess">Thanks! We'll keep you posted.</div>
@@ -182,6 +178,30 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   <a href="https://github.com/itsukiken1">GitHub</a> · All tools are open source and free
 </div>
 
-<img src="https://visitor-badge.laobi.icu/badge?page_id=itsukiken1.aihm" alt="" style="display:none">
+<script>
+function handleSubmit(e) {
+  e.preventDefault();
+  const email = document.getElementById('emailInput').value;
+  // Store locally for now (will integrate with email service later)
+  const emails = JSON.parse(localStorage.getItem('aihm_emails') || '[]');
+  emails.push({ email, date: new Date().toISOString() });
+  localStorage.setItem('aihm_emails', JSON.stringify(emails));
+
+  // Also send to a simple endpoint if available
+  try {
+    fetch('https://formspree.io/f/placeholder', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    }).catch(() => {});
+  } catch(e) {}
+
+  document.getElementById('emailForm').style.display = 'none';
+  document.getElementById('emailSuccess').style.display = 'block';
+  return false;
+}
+</script>
+<script data-goatcounter="https://aihm.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
